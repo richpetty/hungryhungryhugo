@@ -1,6 +1,10 @@
-import pygame
 import random
 from random import randint, choice
+
+import pygame
+
+from utils import Image, fetch_sound
+
 
 #pygame setup
 screen = pygame.display.set_mode((1280,720))
@@ -8,33 +12,17 @@ pygame.font.init()
 pygame.mixer.init()
 clock = pygame.time.Clock()
 
-hugo_img = pygame.image.load("hugo.bmp")
-hugo_rect = hugo_img.get_rect()
 
-remy_img = pygame.image.load("remy.bmp")
-remy_rect = remy_img.get_rect()
-
-dreamies_img = pygame.image.load("dreamies.bmp")
-dreamies_rect = dreamies_img.get_rect()
+hugo = Image("hugo.bmp")
+remy = Image("remy.bmp")
+dreamies = Image("dreamies.bmp")
 
 
-meow_sound = pygame.mixer.Sound("meow.wav")
-crunch_sound = pygame.mixer.Sound("crunch.wav")
-fanfare_sound = pygame.mixer.Sound("fanfare.wav")
-
-
-remy_direction_x = 1
-remy_direction_y = 1
-random_remy_x=1
-random_remy_y=1
+meow_sound = fetch_sound("meow.wav")
+crunch_sound = fetch_sound("crunch.wav")
+fanfare_sound = fetch_sound("fanfare.wav")
 
 white = (255,255,255)
-
-
-dreamies_direction_x = 1
-dreamies_direction_y = 1
-random_dreamies_x=1
-random_dreamies_y=1
 
 score = 0
 score_increment = 10
@@ -43,14 +31,11 @@ running = True
 dt = 0
 rt = 0
 
-hugo_rect.centerx = screen.get_width()/2
-hugo_rect.centery = screen.get_height()/2
 
-remy_rect.centerx = screen.get_width()/2
-remy_rect.centery = screen.get_height()/2
+hugo.reset_position(screen)
+remy.reset_position(screen)
+dreamies.reset_position(screen)
 
-dreamies_rect.centerx = screen.get_width()/2
-dreamies_rect.centery = screen.get_height()/2
 
 while running:
     font = pygame.font.Font(None, 36)
@@ -59,10 +44,9 @@ while running:
             running = False
 
     screen.fill("purple")
-    screen.blit(hugo_img,hugo_rect)
-    screen.blit(remy_img,remy_rect)
-    screen.blit(dreamies_img,dreamies_rect)
-
+    screen.blit(hugo.img, hugo.rect)
+    screen.blit(remy.img, remy.rect)
+    screen.blit(dreamies.img, dreamies.rect)
 
 
     rt = dt
@@ -86,67 +70,26 @@ while running:
         score_increment = 0
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and hugo_rect.centery>0:
-        hugo_rect.centery -= 300*dt
-    if keys[pygame.K_s] and hugo_rect.centery<720:
-        hugo_rect.centery += 300*dt
-    if keys[pygame.K_a] and hugo_rect.centerx>0:
-        hugo_rect.centerx -= 300*dt
-    if keys[pygame.K_d] and hugo_rect.centerx<1280:
-        hugo_rect.centerx += 300*dt
+    if keys[pygame.K_w] and hugo.rect.centery>0:
+        hugo.rect.centery -= 300*dt
+    if keys[pygame.K_s] and hugo.rect.centery<720:
+        hugo.rect.centery += 300*dt
+    if keys[pygame.K_a] and hugo.rect.centerx>0:
+        hugo.rect.centerx -= 300*dt
+    if keys[pygame.K_d] and hugo.rect.centerx<1280:
+        hugo.rect.centerx += 300*dt
 
 
-    remy_rect.centery += remy_direction_y*300*rt*random_remy_x
-    remy_rect.centerx += remy_direction_x*300*rt*random_remy_y
-    if remy_rect.centery <= 100:
-        remy_rect.centery = 100
-        remy_direction_y *= -1
-        random_remy_y = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
-    if remy_rect.centery > 620:
-        remy_rect.centery = 620
-        remy_direction_y *= -1
-        random_remy_y = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
+    remy.move(rt)
+    remy.bound_image()
 
-    if remy_rect.centerx < 100:
-        remy_rect.centerx = 100
-        remy_direction_x *= -1
-        random_remy_x = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
+    dreamies.move(rt)
+    dreamies.bound_image()
 
-    if remy_rect.centerx > 1180:
-        remy_rect.centerx = 1180
-        remy_direction_x *= -1
-        random_remy_x = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
-
-
-
-
-
-
-    dreamies_rect.centery += dreamies_direction_y*300*dt*random_dreamies_x
-    dreamies_rect.centerx += dreamies_direction_x*300*dt*random_dreamies_y
-    if dreamies_rect.centery <= 100:
-        dreamies_rect.centery = 100
-        dreamies_direction_y *= -1
-        random_dreamies_y = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
-    if dreamies_rect.centery > 620:
-        dreamies_rect.centery = 620
-        dreamies_direction_y *= -1
-        dreamies_dreamies_y = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
-
-    if dreamies_rect.centerx < 100:
-        dreamies_rect.centerx = 100
-        dreamies_direction_x *= -1
-        random_dreamies_x = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
-
-    if dreamies_rect.centerx > 1180:
-        dreamies_rect.centerx = 1180
-        dreamies_direction_x *= -1
-        random_dreamies_x = random.choice([-1.25,-1.5,-2,1.25,1.5,2])
-
-    if hugo_rect.colliderect(remy_rect):
+    if hugo.rect.colliderect(remy.rect):
         score -= score_increment
         pygame.mixer.Sound.play(meow_sound)
-    if hugo_rect.colliderect(dreamies_rect):
+    if hugo.rect.colliderect(dreamies.rect):
         score += score_increment
         pygame.mixer.Sound.play(crunch_sound)
 

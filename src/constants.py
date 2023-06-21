@@ -1,5 +1,5 @@
-IMG_PATH = "../assets/images/"
-SOUNDS_PATH = "../assets/sounds/"
+from pathlib import Path
 
 
-@dataclass
+IMG_PATH = Path("assets/images/")
+SOUNDS_PATH = Path("assets/sounds/")
