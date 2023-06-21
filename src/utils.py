@@ -32,7 +32,7 @@ class Image:
         self.rect.centery = screen.get_height() / 2
 
     def change_direction_x(self, x: float):
-        self.rect.centery = x
+        self.rect.centerx = x
         self.direction_x *= -1
         self.random_x = random.choice(self._choices)
 
