@@ -1,3 +1,10 @@
 # hungryhungryhugo
 Hungry Hungry Hugo: The Game
-Requires pygame to be installed
+
+## Install
+
+To install run `pip install -r requirements.txt`
+
+## Run
+
+To run execute `python src/HHH.py`
